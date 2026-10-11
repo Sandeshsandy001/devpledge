@@ -1,8 +1,8 @@
 # DevPledge | Web3 Commitment Escrow
 
-**Built for the Colosseum & Superteam Nepal Hackathons**
 
-DevPledge is a trustless accountability dApp built on Solana Devnet. Developers commit funds (SOL) into an on-chain escrow to force themselves to ship code on GitHub.
+
+DevPledge is a trustless accountability dApp built on Solana Devnet. Developers commit funds (SOL) into an on-chain escrow to force themselves to ship code on GitHub in time.
 
 - **100% Refund:** If you meet your target commits before the deadline, your locked SOL is refunded 100% plus rent.
 - **Trustless Slashing:** If the deadline expires and you fail your target, your locked SOL is slashed and sent to the community treasury.
