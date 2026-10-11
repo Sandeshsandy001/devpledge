@@ -4,16 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { 
-  Lock, 
-  GitCommit, 
-  Clock, 
-  Coins, 
+  GitBranch, 
   CheckCircle2, 
   AlertCircle, 
   Loader2, 
-  ExternalLink,
-  GitBranch,
-  Sparkles
+  ExternalLink
 } from 'lucide-react';
 import { 
   DEFAULT_TREASURY_PUBKEY, 
@@ -164,7 +159,7 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
       if (msg.includes('User rejected')) {
         setErrorMsg('Transaction rejected in wallet.');
       } else if (msg.includes('already in use') || msg.includes('0x0')) {
-        setErrorMsg('You already have an active pledge escrow! Settle or wait for expiration before creating another.');
+        setErrorMsg('You already have an active pledge escrow. Settle or wait for expiration before creating another.');
       } else {
         setErrorMsg(`Transaction failed: ${msg}`);
       }
@@ -173,51 +168,43 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
   };
 
   return (
-    <div className="glass-panel glass-panel-highlight" style={{ padding: '2rem' }}>
+    <div className="clean-card" style={{ padding: '1.75rem' }}>
       
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Lock size={22} color="#14f195" />
-            <span>Create New Commitment Escrow</span>
-          </h2>
-          <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
-            Lock your SOL deposit. Hit your commit goal to get refunded 100%.
-          </p>
-        </div>
-
-        <span className="pill pill-green" style={{ fontSize: '0.78rem' }}>
-          <Sparkles size={12} />
-          <span>Trustless Escrow PDA</span>
-        </span>
+      <div style={{ marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.15rem', fontWeight: 600, color: '#ffffff', marginBottom: '0.25rem' }}>
+          Create Commitment Escrow
+        </h2>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+          Lock SOL into on-chain escrow. Hit your target commits before the deadline to claim 100% back.
+        </p>
       </div>
 
-      <form onSubmit={handleCreatePledge} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <form onSubmit={handleCreatePledge} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         
         {/* Step 1: GitHub Username */}
         <div>
-          <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
-            1. GitHub Username
+          <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 500, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>
+            GitHub Username
           </label>
           <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
-              <GitBranch size={18} />
+            <div style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
+              <GitBranch size={16} />
             </div>
             <input
               id="github-username-input"
               type="text"
               value={githubUsername}
               onChange={(e) => setGithubUsername(e.target.value)}
-              placeholder="e.g. torvalds or your-handle"
+              placeholder="e.g. your-github-handle"
               className="form-input"
-              style={{ paddingLeft: '2.75rem' }}
+              style={{ paddingLeft: '2.4rem' }}
               maxLength={39}
               required
             />
             {profileLoading && (
-              <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
-                <Loader2 size={16} className="animate-spin" color="#9945ff" />
+              <div style={{ position: 'absolute', right: '0.85rem', top: '50%', transform: 'translateY(-50%)' }}>
+                <Loader2 size={15} className="animate-spin" color="#71717a" />
               </div>
             )}
           </div>
@@ -227,35 +214,35 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.85rem',
-              marginTop: '0.65rem',
-              padding: '0.65rem 0.9rem',
-              background: 'rgba(255, 255, 255, 0.03)',
+              gap: '0.75rem',
+              marginTop: '0.5rem',
+              padding: '0.5rem 0.75rem',
+              background: '#18181b',
               borderRadius: 'var(--radius-sm)',
-              border: '1px solid rgba(20, 241, 149, 0.2)'
+              border: '1px solid var(--border-subtle)'
             }}>
               <img
                 src={profile.avatarUrl}
                 alt={profile.username}
-                style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--border-subtle)' }}
+                style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid var(--border-subtle)' }}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{profile.name || profile.username}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#ffffff' }}>{profile.name || profile.username}</span>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>@{profile.username}</span>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', gap: '0.75rem' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'flex', gap: '0.65rem' }}>
                   <span>{profile.publicRepos} public repos</span>
                   <span>{profile.followers} followers</span>
                 </div>
               </div>
-              <CheckCircle2 size={18} color="#14f195" />
+              <CheckCircle2 size={16} color="#10b981" />
             </div>
           )}
 
           {profileError && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.5rem', color: '#f87171', fontSize: '0.8rem' }}>
-              <AlertCircle size={14} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.4rem', color: '#f87171', fontSize: '0.78rem' }}>
+              <AlertCircle size={13} />
               <span>{profileError}</span>
             </div>
           )}
@@ -263,14 +250,14 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
 
         {/* Step 2: Target Commits */}
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <label style={{ fontSize: '0.88rem', fontWeight: 600 }}>2. Target Commits</label>
-            <span style={{ fontSize: '0.8rem', color: 'var(--solana-green)', fontWeight: 600 }}>
-              {targetCommits} Commits required
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Target Commits</label>
+            <span style={{ fontSize: '0.78rem', color: '#fafafa', fontWeight: 500 }}>
+              {targetCommits} Commits
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(75px, 1fr))', gap: '0.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem' }}>
             {COMMIT_OPTIONS.map((c) => (
               <button
                 key={c}
@@ -278,18 +265,18 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
                 id={`commit-opt-${c}`}
                 onClick={() => setTargetCommits(c)}
                 style={{
-                  padding: '0.65rem 0.5rem',
+                  padding: '0.55rem 0.4rem',
                   borderRadius: 'var(--radius-sm)',
-                  background: targetCommits === c ? 'rgba(20, 241, 149, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                  border: `1px solid ${targetCommits === c ? 'var(--solana-green)' : 'var(--border-subtle)'}`,
-                  color: targetCommits === c ? '#fff' : 'var(--text-secondary)',
-                  fontWeight: targetCommits === c ? 700 : 500,
-                  fontSize: '0.88rem',
+                  background: targetCommits === c ? '#27272a' : '#18181b',
+                  border: `1px solid ${targetCommits === c ? '#52525b' : 'var(--border-subtle)'}`,
+                  color: targetCommits === c ? '#ffffff' : 'var(--text-secondary)',
+                  fontWeight: targetCommits === c ? 600 : 400,
+                  fontSize: '0.82rem',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
                 }}
               >
-                {c} Commits
+                {c}
               </button>
             ))}
           </div>
@@ -297,14 +284,14 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
 
         {/* Step 3: Duration */}
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <label style={{ fontSize: '0.88rem', fontWeight: 600 }}>3. Commitment Duration</label>
-            <span style={{ fontSize: '0.8rem', color: 'var(--solana-purple)', fontWeight: 600 }}>
-              {DURATION_OPTIONS.find((d) => d.seconds === durationSeconds)?.label || `${durationSeconds}s`}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Duration</label>
+            <span style={{ fontSize: '0.78rem', color: '#fafafa', fontWeight: 500 }}>
+              {DURATION_OPTIONS.find((d) => d.seconds === durationSeconds)?.label}
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '0.4rem' }}>
             {DURATION_OPTIONS.map((d) => (
               <button
                 key={d.seconds}
@@ -312,34 +299,34 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
                 id={`duration-opt-${d.seconds}`}
                 onClick={() => setDurationSeconds(d.seconds)}
                 style={{
-                  padding: '0.65rem 0.75rem',
+                  padding: '0.5rem 0.5rem',
                   borderRadius: 'var(--radius-sm)',
-                  background: durationSeconds === d.seconds ? 'rgba(153, 69, 255, 0.18)' : 'rgba(255, 255, 255, 0.03)',
-                  border: `1px solid ${durationSeconds === d.seconds ? 'var(--solana-purple)' : 'var(--border-subtle)'}`,
-                  color: durationSeconds === d.seconds ? '#fff' : 'var(--text-secondary)',
-                  fontWeight: durationSeconds === d.seconds ? 700 : 500,
-                  fontSize: '0.82rem',
+                  background: durationSeconds === d.seconds ? '#27272a' : '#18181b',
+                  border: `1px solid ${durationSeconds === d.seconds ? '#52525b' : 'var(--border-subtle)'}`,
+                  color: durationSeconds === d.seconds ? '#ffffff' : 'var(--text-secondary)',
+                  fontWeight: durationSeconds === d.seconds ? 600 : 400,
+                  fontSize: '0.78rem',
                   cursor: 'pointer',
                   textAlign: 'center',
                   transition: 'all 0.15s ease'
                 }}
               >
-                {d.label}
+                {d.label.replace(' (Speedrun Demo)', '')}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Step 4: Deposit Amount */}
+        {/* Step 4: Stake Amount (SOL) */}
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <label style={{ fontSize: '0.88rem', fontWeight: 600 }}>4. SOL Escrow Deposit</label>
-            <span className="mono-text" style={{ fontSize: '0.85rem', color: '#14f195', fontWeight: 700 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Stake Amount (SOL)</label>
+            <span className="mono-text" style={{ fontSize: '0.82rem', color: '#ffffff', fontWeight: 600 }}>
               {amountSol} SOL
             </span>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.4rem' }}>
             {[0.05, 0.1, 0.25, 0.5, 1.0].map((amt) => (
               <button
                 key={amt}
@@ -348,18 +335,18 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
                 onClick={() => setAmountSol(amt)}
                 style={{
                   flex: 1,
-                  padding: '0.55rem 0.25rem',
+                  padding: '0.45rem 0.2rem',
                   borderRadius: 'var(--radius-sm)',
-                  background: amountSol === amt ? 'rgba(20, 241, 149, 0.18)' : 'rgba(255, 255, 255, 0.03)',
-                  border: `1px solid ${amountSol === amt ? 'var(--solana-green)' : 'var(--border-subtle)'}`,
-                  color: amountSol === amt ? '#fff' : 'var(--text-secondary)',
-                  fontWeight: amountSol === amt ? 700 : 500,
-                  fontSize: '0.82rem',
+                  background: amountSol === amt ? '#27272a' : '#18181b',
+                  border: `1px solid ${amountSol === amt ? '#52525b' : 'var(--border-subtle)'}`,
+                  color: amountSol === amt ? '#ffffff' : 'var(--text-secondary)',
+                  fontWeight: amountSol === amt ? 600 : 400,
+                  fontSize: '0.78rem',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
                 }}
               >
-                {amt} SOL
+                {amt}
               </button>
             ))}
           </div>
@@ -372,51 +359,39 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
             value={amountSol}
             onChange={(e) => setAmountSol(parseFloat(e.target.value) || 0)}
             className="form-input"
-            placeholder="Custom SOL amount"
+            placeholder="Custom amount"
             required
           />
         </div>
 
-        {/* Summary Box */}
+        {/* Escrow Details */}
         <div style={{
-          background: 'rgba(13, 16, 26, 0.7)',
+          background: '#18181b',
           border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-md)',
-          padding: '1.25rem',
-          fontSize: '0.82rem'
+          borderRadius: 'var(--radius-sm)',
+          padding: '0.9rem',
+          fontSize: '0.78rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.4rem'
         }}>
-          <div style={{ fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>Escrow Contract Summary</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: 'var(--text-muted)' }}>PDA:</span>
+            <span className="mono-text" style={{ color: '#fafafa' }}>
+              {pdaAddress ? `${pdaAddress.slice(0, 6)}...${pdaAddress.slice(-6)}` : 'Connect wallet to derive'}
+            </span>
           </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Pledge PDA Address:</span>
-              <span className="mono-text" style={{ color: '#14f195' }}>
-                {pdaAddress ? `${pdaAddress.slice(0, 8)}...${pdaAddress.slice(-6)}` : 'Connect wallet to derive'}
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Oracle Relayer Authority:</span>
-              <span className="mono-text" style={{ color: '#9945ff' }}>
-                {oracleAuthority ? `${oracleAuthority.slice(0, 8)}...${oracleAuthority.slice(-6)}` : 'Loading oracle...'}
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Slashing Destination:</span>
-              <span className="mono-text" style={{ color: '#f59e0b' }}>
-                {treasuryPubkey.slice(0, 8)}...{treasuryPubkey.slice(-6)} (Community Treasury)
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
-              <span style={{ fontWeight: 600 }}>Refund Terms:</span>
-              <span style={{ color: '#4ade80', fontWeight: 600 }}>
-                100% deposit ({amountSol} SOL) refunded on target
-              </span>
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: 'var(--text-muted)' }}>Treasury (if slashed):</span>
+            <span className="mono-text" style={{ color: '#a1a1aa' }}>
+              {treasuryPubkey.slice(0, 6)}...{treasuryPubkey.slice(-4)}
+            </span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.4rem', marginTop: '0.1rem' }}>
+            <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Refund Policy:</span>
+            <span style={{ color: '#10b981', fontWeight: 500 }}>
+              100% ({amountSol} SOL + rent) upon target
+            </span>
           </div>
         </div>
 
@@ -425,15 +400,15 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.75rem 1rem',
-            background: 'rgba(239, 68, 68, 0.12)',
-            border: '1px solid rgba(239, 68, 68, 0.35)',
+            gap: '0.45rem',
+            padding: '0.65rem 0.85rem',
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.25)',
             borderRadius: 'var(--radius-sm)',
             color: '#f87171',
-            fontSize: '0.85rem'
+            fontSize: '0.8rem'
           }}>
-            <AlertCircle size={16} />
+            <AlertCircle size={15} />
             <span>{errorMsg}</span>
           </div>
         )}
@@ -444,25 +419,25 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: '0.5rem',
-            padding: '0.75rem 1rem',
-            background: 'rgba(20, 241, 149, 0.12)',
-            border: '1px solid rgba(20, 241, 149, 0.35)',
+            padding: '0.65rem 0.85rem',
+            background: 'rgba(16, 185, 129, 0.1)',
+            border: '1px solid rgba(16, 185, 129, 0.25)',
             borderRadius: 'var(--radius-sm)',
-            color: '#4ade80',
-            fontSize: '0.85rem'
+            color: '#10b981',
+            fontSize: '0.8rem'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <CheckCircle2 size={16} />
-              <span>Escrow locked on Devnet!</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <CheckCircle2 size={15} />
+              <span>Escrow locked on Devnet</span>
             </div>
             <a
               href={`https://explorer.solana.com/tx/${successTx}?cluster=devnet`}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#14f195', textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+              style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.2rem', textDecoration: 'underline' }}
             >
               <span>View Explorer</span>
-              <ExternalLink size={12} />
+              <ExternalLink size={11} />
             </a>
           </div>
         )}
@@ -473,22 +448,19 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
           id="create-pledge-submit-btn"
           disabled={isSubmitting || !connected || !profile}
           className="btn-primary"
-          style={{ width: '100%', padding: '0.95rem' }}
+          style={{ width: '100%', marginTop: '0.25rem' }}
         >
           {isSubmitting ? (
             <>
-              <Loader2 size={18} className="animate-spin" />
-              <span>Signing & Locking Escrow on Devnet...</span>
+              <Loader2 size={16} className="animate-spin" />
+              <span>Locking Escrow on Devnet...</span>
             </>
           ) : !connected ? (
             <span>Connect Wallet to Lock Escrow</span>
           ) : !profile ? (
             <span>Verify GitHub Username to Continue</span>
           ) : (
-            <>
-              <Lock size={18} />
-              <span>Lock {amountSol} SOL in Escrow</span>
-            </>
+            <span>Lock {amountSol} SOL in Escrow</span>
           )}
         </button>
 

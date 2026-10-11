@@ -1,6 +1,4 @@
-# DevPledge | Web3 Commitment Escrow
-
-
+# DevPledge | Non-custodial Commitment Escrow on Solana
 
 DevPledge is a trustless accountability dApp built on Solana Devnet. Developers commit funds (SOL) into an on-chain escrow to force themselves to ship code on GitHub in time.
 
@@ -70,7 +68,7 @@ http://localhost:3000
 
 ---
 
-## 🧪 Hackathon Demo Flow (Speedrun in 60s)
+## 🧪 Quick Test Flow (Speedrun in 60s)
 
 1. Connect your Phantom or Solflare wallet on Devnet.
 2. Enter your GitHub username (`Sandeshsandy001`). The app previews your avatar and repo count.

@@ -3,24 +3,22 @@ import './globals.css';
 import { SolanaWalletProvider } from '@/components/SolanaWalletProvider';
 
 export const metadata: Metadata = {
-  title: 'DevPledge | Web3 Commitment Escrow on Solana Devnet',
+  title: 'DevPledge | Non-custodial Commitment Escrow on Solana',
   description:
-    'A trustless accountability dApp for developers. Lock SOL in escrow to force yourself to ship code on GitHub. Verified by automated GitHub Oracle relayer.',
+    'A developer accountability tool. Commit funds into trustless escrow to force yourself to ship code on GitHub. Verified on-chain via GitHub commit oracle.',
   keywords: [
     'Solana',
     'DevPledge',
     'Escrow',
-    'Colosseum',
-    'Superteam Nepal',
     'GitHub',
     'Smart Contract',
     'Anchor',
     'Devnet',
   ],
-  authors: [{ name: 'DevPledge Core Team' }],
+  authors: [{ name: 'DevPledge' }],
   openGraph: {
-    title: 'DevPledge | Web3 Commitment Escrow',
-    description: 'Lock SOL. Ship Code. Or Get Slashed.',
+    title: 'DevPledge | Non-custodial Commitment Escrow',
+    description: 'Commit funds. Ship code. Get refunded.',
     type: 'website',
   },
 };
@@ -37,11 +35,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
-        <div className="ambient-bg" aria-hidden="true">
-          <div className="ambient-blob-1" />
-          <div className="ambient-blob-2" />
-          <div className="ambient-grid" />
-        </div>
+        <div className="subtle-grid" aria-hidden="true" />
         <SolanaWalletProvider>
           {children}
         </SolanaWalletProvider>
