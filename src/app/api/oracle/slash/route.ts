@@ -53,15 +53,8 @@ export async function POST(req: NextRequest) {
         await connection.confirmTransaction(airdropSig);
         oracleBalance = await connection.getBalance(oracleKeypair.publicKey);
       } catch (e) {
-        console.warn('Oracle airdrop attempt failed:', e);
+        // faucet may be rate-limited
       }
-    }
-
-    if (oracleBalance < 5_000) {
-      return NextResponse.json({
-        success: false,
-        error: `Relayer needs Devnet gas to submit slash transaction. Please fund Oracle: ${oracleKeypair.publicKey.toBase58()}`,
-      }, { status: 503 });
     }
 
     const ix = slashPledgeInstruction({
@@ -69,22 +62,42 @@ export async function POST(req: NextRequest) {
       treasury: treasuryPubkey,
     });
 
-    const tx = new Transaction().add(ix);
-    tx.feePayer = oracleKeypair.publicKey;
     const { blockhash } = await connection.getLatestBlockhash();
+
+    // If Oracle has gas, it submits directly
+    if (oracleBalance >= 5_000) {
+      const tx = new Transaction().add(ix);
+      tx.feePayer = oracleKeypair.publicKey;
+      tx.recentBlockhash = blockhash;
+
+      const signature = await sendAndConfirmTransaction(connection, tx, [oracleKeypair], {
+        commitment: 'confirmed',
+      });
+
+      return NextResponse.json({
+        success: true,
+        signature,
+        explorerUrl: `https://explorer.solana.com/tx/${signature}?cluster=devnet`,
+        slashedSol: pledge.amountSol,
+        treasury: pledge.treasury,
+        message: `Pledge deadline expired without reaching targets. ${pledge.amountSol} SOL slashed and sent to community treasury.`,
+      });
+    }
+
+    // If Oracle is out of gas, return the transaction for the caller wallet to submit as fee payer
+    const tx = new Transaction().add(ix);
+    tx.feePayer = userPubkey;
     tx.recentBlockhash = blockhash;
 
-    const signature = await sendAndConfirmTransaction(connection, tx, [oracleKeypair], {
-      commitment: 'confirmed',
-    });
+    const serialized = tx.serialize({ requireAllSignatures: false }).toString('base64');
 
     return NextResponse.json({
       success: true,
-      signature,
-      explorerUrl: `https://explorer.solana.com/tx/${signature}?cluster=devnet`,
+      requiresUserSignature: true,
+      transactionBase64: serialized,
       slashedSol: pledge.amountSol,
       treasury: pledge.treasury,
-      message: `Pledge deadline expired without reaching targets. ${pledge.amountSol} SOL slashed and sent to community treasury.`,
+      message: `Pledge deadline expired. Please approve the slash transaction in your wallet.`,
     });
   } catch (err: unknown) {
     console.error('Error slashing pledge:', err);

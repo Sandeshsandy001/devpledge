@@ -194,6 +194,29 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
 
       const data = await res.json();
       if (data.success) {
+        if (data.requiresUserSignature && data.transactionBase64) {
+          const tx = Transaction.from(Buffer.from(data.transactionBase64, 'base64'));
+          const signature = await sendTransaction(tx, connection);
+          const latest = await connection.getLatestBlockhash();
+          await connection.confirmTransaction(
+            {
+              signature,
+              blockhash: latest.blockhash,
+              lastValidBlockHeight: latest.lastValidBlockHeight,
+            },
+            'confirmed'
+          );
+
+          setActionSuccess({
+            type: 'slash',
+            signature,
+            message: data.message || `Funds slashed and sent to community treasury: ${pledge.treasury}`,
+            explorerUrl: `https://explorer.solana.com/tx/${signature}?cluster=devnet`,
+          });
+          onRefresh();
+          return;
+        }
+
         setActionSuccess({
           type: 'slash',
           signature: data.signature,
