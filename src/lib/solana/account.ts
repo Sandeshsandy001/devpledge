@@ -6,7 +6,7 @@ export interface PledgeAccountData {
   user: string;
   authority: string;
   treasury: string;
-  amountLamports: bigint;
+  amountLamports: string;
   amountSol: number;
   githubUsername: string;
   startTime: number; // Unix timestamp seconds
@@ -74,7 +74,7 @@ export function decodePledgeAccount(data: Buffer, address: PublicKey): PledgeAcc
     user,
     authority,
     treasury,
-    amountLamports,
+    amountLamports: amountLamports.toString(),
     amountSol: Number(amountLamports) / 1_000_000_000,
     githubUsername,
     startTime,
