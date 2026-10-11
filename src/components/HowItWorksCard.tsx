@@ -16,34 +16,51 @@ export function HowItWorksCard() {
   const steps = [
     {
       num: '01',
-      icon: <Lock size={16} color="#fafafa" />,
+      icon: <Lock size={16} color="var(--text-primary)" />,
       title: 'Lock Escrow',
       desc: 'Deposit SOL into a trustless PDA escrow derived from your wallet public key.',
     },
     {
       num: '02',
-      icon: <GitCommit size={16} color="#fafafa" />,
+      icon: <GitCommit size={16} color="var(--text-primary)" />,
       title: 'Ship Code',
       desc: 'Push commits to any of your public GitHub repositories within the deadline.',
     },
     {
       num: '03',
-      icon: <ShieldCheck size={16} color="#fafafa" />,
+      icon: <ShieldCheck size={16} color="var(--text-primary)" />,
       title: 'Oracle Proof',
       desc: 'The relayer oracle validates commit hashes and timestamps against on-chain state.',
     },
     {
       num: '04',
-      icon: <Flame size={16} color="#fafafa" />,
+      icon: <Flame size={16} color="var(--text-primary)" />,
       title: 'Refund or Slash',
       desc: 'Hit your commit target to claim 100% of your deposit + rent. Unmet pledges forfeit to the treasury.',
     },
   ];
 
   return (
-    <div className="clean-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', height: '100%' }}>
+    <div
+      className="clean-card"
+      style={{
+        padding: '1.75rem',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1.5rem',
+        height: '100%',
+        minHeight: '100%',
+      }}
+    >
       <div>
-        <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#ffffff', marginBottom: '0.25rem' }}>
+        <h3
+          style={{
+            fontSize: '1.05rem',
+            fontWeight: 600,
+            color: 'var(--text-primary)',
+            marginBottom: '0.25rem',
+          }}
+        >
           How DevPledge Works
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
@@ -55,23 +72,29 @@ export function HowItWorksCard() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
         {steps.map((s) => (
           <div key={s.num} style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: 'var(--radius-sm)',
-              background: '#18181b',
-              border: '1px solid var(--border-subtle)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0
-            }}>
+            <div
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: 'var(--radius-sm)',
+                background: 'var(--bg-card-subtle)',
+                border: '1px solid var(--border-subtle)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
               {s.icon}
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem' }}>
-                <span className="mono-text" style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{s.num}</span>
-                <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#fafafa' }}>{s.title}</span>
+                <span className="mono-text" style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                  {s.num}
+                </span>
+                <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  {s.title}
+                </span>
               </div>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
                 {s.desc}
@@ -82,24 +105,47 @@ export function HowItWorksCard() {
       </div>
 
       {/* Program ID Verification Box */}
-      <div style={{
-        marginTop: 'auto',
-        padding: '1rem',
-        borderRadius: 'var(--radius-sm)',
-        background: '#18181b',
-        border: '1px solid var(--border-subtle)',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>
+      <div
+        style={{
+          marginTop: 'auto',
+          padding: '1rem',
+          borderRadius: 'var(--radius-sm)',
+          background: 'var(--bg-card-subtle)',
+          border: '1px solid var(--border-subtle)',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '0.35rem',
+          }}
+        >
+          <span
+            style={{
+              fontSize: '0.72rem',
+              color: 'var(--text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              fontWeight: 600,
+            }}
+          >
             Program ID (Devnet)
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <button
               onClick={copyProgramId}
-              style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '0.1rem' }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer',
+                padding: '0.1rem',
+              }}
               title="Copy Program ID"
             >
-              {copied ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
+              {copied ? <Check size={13} color="var(--accent-emerald)" /> : <Copy size={13} />}
             </button>
             <a
               href={`https://explorer.solana.com/address/${PROGRAM_ID.toBase58()}?cluster=devnet`}
@@ -112,11 +158,41 @@ export function HowItWorksCard() {
             </a>
           </div>
         </div>
-        <div className="mono-text" style={{ fontSize: '0.78rem', color: '#a1a1aa', wordBreak: 'break-all' }}>
+
+        <div
+          className="mono-text"
+          style={{
+            fontSize: '0.78rem',
+            color: 'var(--text-primary)',
+            wordBreak: 'break-all',
+            lineHeight: 1.4,
+          }}
+        >
           {PROGRAM_ID.toBase58()}
         </div>
-        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
-          PDA Derivation: <code>[&quot;pledge&quot;, wallet_pubkey]</code>
+
+        <div
+          style={{
+            fontSize: '0.7rem',
+            color: 'var(--text-muted)',
+            marginTop: '0.35rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+          }}
+        >
+          <span>PDA Derivation:</span>
+          <code
+            className="mono-text"
+            style={{
+              background: 'var(--bg-primary)',
+              padding: '0.1rem 0.35rem',
+              borderRadius: '3px',
+              border: '1px solid var(--border-subtle)',
+            }}
+          >
+            [&quot;pledge&quot;, wallet_pubkey]
+          </code>
         </div>
       </div>
     </div>

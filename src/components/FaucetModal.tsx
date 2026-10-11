@@ -66,12 +66,13 @@ export function FaucetModal({ isOpen, onClose }: FaucetModalProps) {
       justifyContent: 'center',
       padding: '1.5rem'
     }}>
-      <div className="glass-panel" style={{
+      <div className="clean-card" style={{
         width: '100%',
         maxWidth: '560px',
         padding: '2rem',
-        background: 'var(--bg-secondary)',
-        border: '1px solid rgba(20, 241, 149, 0.3)'
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-subtle)',
+        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
       }}>
         
         {/* Header */}

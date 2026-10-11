@@ -55,13 +55,7 @@ export default function Home() {
         <div className="container" style={{ marginTop: '1rem' }}>
           
           {/* Main 2-Column Dashboard View */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-            gap: '1.5rem',
-            alignItems: 'stretch',
-            marginBottom: '2.5rem'
-          }}>
+          <div className="dashboard-grid">
             
             {/* Left Column: Active Escrow (if existing) or Create Escrow Form */}
             <div>
@@ -96,9 +90,10 @@ export default function Home() {
       {/* Production-grade Minimal Footer */}
       <footer style={{
         borderTop: '1px solid var(--border-subtle)',
-        background: '#09090b',
+        background: 'var(--bg-secondary)',
         padding: '2rem 0',
-        marginTop: 'auto'
+        marginTop: 'auto',
+        transition: 'background-color 0.2s ease, border-color 0.2s ease'
       }}>
         <div className="container" style={{
           display: 'flex',

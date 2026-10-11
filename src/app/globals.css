@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
+  /* Default Dark Mode (Linear / Vercel style) */
   --bg-primary: #09090b;
   --bg-secondary: #0f0f12;
   --bg-card: #121215;
@@ -12,6 +13,7 @@
   --border-focus: #52525b;
 
   --accent-white: #ffffff;
+  --accent-contrast: #000000;
   --accent-emerald: #10b981;
   --accent-emerald-subtle: rgba(16, 185, 129, 0.1);
   --accent-red: #ef4444;
@@ -21,6 +23,10 @@
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
 
+  --grid-line: rgba(255, 255, 255, 0.02);
+  --header-bg: rgba(9, 9, 11, 0.85);
+  --status-pill-bg: #18181b;
+
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
@@ -28,6 +34,34 @@
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-full: 9999px;
+}
+
+[data-theme='light'] {
+  /* Crisp High-Contrast Light Mode */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-subtle: #f8fafc;
+  --bg-hover: #e2e8f0;
+
+  --border-subtle: #e2e8f0;
+  --border-muted: #cbd5e1;
+  --border-focus: #94a3b8;
+
+  --accent-white: #09090b;
+  --accent-contrast: #ffffff;
+  --accent-emerald: #059669;
+  --accent-emerald-subtle: rgba(5, 150, 105, 0.12);
+  --accent-red: #dc2626;
+  --accent-amber: #d97706;
+
+  --text-primary: #09090b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --grid-line: rgba(15, 23, 42, 0.04);
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --status-pill-bg: #f1f5f9;
 }
 
 * {
@@ -45,28 +79,57 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Subtle grid overlay without neon blur */
+/* Subtle grid overlay */
 .subtle-grid {
   position: fixed;
   inset: 0;
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   pointer-events: none;
   z-index: 0;
 }
 
-/* Layout container */
+/* Layout container - Responsive Wide layout */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 1.5rem;
   position: relative;
   z-index: 1;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1600px;
+    padding: 0 2.5rem;
+  }
+}
+
+/* Main 2-column Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 1.5rem;
+  align-items: start;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Clean Cards (Vercel / Linear Style) */
@@ -74,11 +137,12 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .clean-card:hover {
-  border-color: #3f3f46;
+  border-color: var(--border-focus);
 }
 
 /* Typography utilities */
@@ -92,8 +156,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: var(--accent-white);
-  color: #000000;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   font-weight: 600;
   font-size: 0.9rem;
   padding: 0.65rem 1.25rem;
@@ -105,8 +169,7 @@ body {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #f4f4f5;
-  filter: brightness(0.98);
+  filter: brightness(0.92);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -137,7 +200,7 @@ body {
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--bg-hover);
-  border-color: #3f3f46;
+  border-color: var(--border-focus);
 }
 
 .btn-danger {
@@ -146,19 +209,19 @@ body {
   justify-content: center;
   gap: 0.45rem;
   background: rgba(239, 68, 68, 0.1);
-  color: #fca5a5;
+  color: var(--accent-red);
   font-weight: 600;
   font-size: 0.85rem;
   padding: 0.55rem 1rem;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 /* Pills & Indicators */
@@ -171,7 +234,7 @@ body {
   font-weight: 500;
   border-radius: var(--radius-full);
   border: 1px solid var(--border-subtle);
-  background: var(--bg-card-subtle);
+  background: var(--status-pill-bg);
   color: var(--text-secondary);
 }
 
@@ -198,24 +261,25 @@ body {
 
 .wallet-adapter-button:hover {
   background: var(--bg-hover) !important;
-  border-color: #3f3f46 !important;
+  border-color: var(--border-focus) !important;
 }
 
 .wallet-adapter-button-trigger {
-  background: #ffffff !important;
-  color: #000000 !important;
+  background: var(--text-primary) !important;
+  color: var(--bg-primary) !important;
   font-weight: 600 !important;
   border: 1px solid transparent !important;
 }
 
 .wallet-adapter-button-trigger:hover {
-  background: #f4f4f5 !important;
+  filter: brightness(0.92) !important;
 }
 
 .wallet-adapter-modal-wrapper {
   background: var(--bg-secondary) !important;
   border: 1px solid var(--border-subtle) !important;
   border-radius: var(--radius-lg) !important;
+  color: var(--text-primary) !important;
 }
 
 /* Form inputs (Vercel Style) */
@@ -228,13 +292,13 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 0.9rem;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
   outline: none;
 }
 
 .form-input:focus {
   border-color: var(--text-primary);
-  background: #1c1c20;
+  background: var(--bg-hover);
 }
 
 .form-input::placeholder {
@@ -260,9 +324,9 @@ body {
   background: var(--bg-primary);
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: var(--border-subtle);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: var(--border-focus);
 }

@@ -126,7 +126,7 @@ export function GlobalPledgesExplorer() {
               <div
                 key={p.address}
                 style={{
-                  background: '#18181b',
+                  background: 'var(--bg-card-subtle)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: 'var(--radius-sm)',
                   padding: '1rem',
@@ -149,7 +149,7 @@ export function GlobalPledgesExplorer() {
                         href={`https://github.com/${p.githubUsername}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ fontWeight: 600, fontSize: '0.85rem', color: '#fafafa', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                        style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                       >
                         <span>@{p.githubUsername}</span>
                         <ExternalLink size={10} color="var(--text-muted)" />
@@ -161,7 +161,7 @@ export function GlobalPledgesExplorer() {
                   </div>
 
                   {isExpired ? (
-                    <span className="status-pill" style={{ color: '#f87171', fontSize: '0.7rem', padding: '0.15rem 0.45rem' }}>
+                    <span className="status-pill" style={{ color: 'var(--accent-red)', fontSize: '0.7rem', padding: '0.15rem 0.45rem' }}>
                       <AlertTriangle size={10} />
                       <span>Expired</span>
                     </span>
@@ -178,21 +178,21 @@ export function GlobalPledgesExplorer() {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  background: '#121215',
+                  background: 'var(--bg-card)',
                   borderRadius: '4px',
                   padding: '0.5rem 0.65rem',
                   fontSize: '0.78rem'
                 }}>
                   <div>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block' }}>LOCKED</span>
-                    <span className="mono-text" style={{ fontWeight: 600, color: '#fafafa' }}>
+                    <span className="mono-text" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                       {p.amountSol} SOL
                     </span>
                   </div>
 
                   <div style={{ textAlign: 'right' }}>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block' }}>TARGET</span>
-                    <span style={{ fontWeight: 500, color: '#fafafa' }}>
+                    <span style={{ fontWeight: 500, color: 'var(--text-primary)' }}>
                       {p.targetCommits} Commits
                     </span>
                   </div>

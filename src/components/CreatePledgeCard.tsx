@@ -299,9 +299,9 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
                 style={{
                   padding: '0.55rem 0.4rem',
                   borderRadius: 'var(--radius-sm)',
-                  background: targetCommits === c ? '#27272a' : '#18181b',
-                  border: `1px solid ${targetCommits === c ? '#52525b' : 'var(--border-subtle)'}`,
-                  color: targetCommits === c ? '#ffffff' : 'var(--text-secondary)',
+                  background: targetCommits === c ? 'var(--text-primary)' : 'var(--bg-card-subtle)',
+                  border: `1px solid ${targetCommits === c ? 'var(--text-primary)' : 'var(--border-subtle)'}`,
+                  color: targetCommits === c ? 'var(--bg-primary)' : 'var(--text-secondary)',
                   fontWeight: targetCommits === c ? 600 : 400,
                   fontSize: '0.82rem',
                   cursor: 'pointer',
@@ -318,7 +318,7 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
             <label style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Duration</label>
-            <span style={{ fontSize: '0.78rem', color: '#fafafa', fontWeight: 500 }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-primary)', fontWeight: 500 }}>
               {DURATION_OPTIONS.find((d) => d.seconds === durationSeconds)?.label}
             </span>
           </div>
@@ -333,9 +333,9 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
                 style={{
                   padding: '0.5rem 0.5rem',
                   borderRadius: 'var(--radius-sm)',
-                  background: durationSeconds === d.seconds ? '#27272a' : '#18181b',
-                  border: `1px solid ${durationSeconds === d.seconds ? '#52525b' : 'var(--border-subtle)'}`,
-                  color: durationSeconds === d.seconds ? '#ffffff' : 'var(--text-secondary)',
+                  background: durationSeconds === d.seconds ? 'var(--text-primary)' : 'var(--bg-card-subtle)',
+                  border: `1px solid ${durationSeconds === d.seconds ? 'var(--text-primary)' : 'var(--border-subtle)'}`,
+                  color: durationSeconds === d.seconds ? 'var(--bg-primary)' : 'var(--text-secondary)',
                   fontWeight: durationSeconds === d.seconds ? 600 : 400,
                   fontSize: '0.78rem',
                   cursor: 'pointer',
@@ -353,7 +353,7 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
             <label style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Stake Amount (SOL)</label>
-            <span className="mono-text" style={{ fontSize: '0.82rem', color: '#ffffff', fontWeight: 600 }}>
+            <span className="mono-text" style={{ fontSize: '0.82rem', color: 'var(--text-primary)', fontWeight: 600 }}>
               {amountSol} SOL
             </span>
           </div>
@@ -369,9 +369,9 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
                   flex: 1,
                   padding: '0.45rem 0.2rem',
                   borderRadius: 'var(--radius-sm)',
-                  background: amountSol === amt ? '#27272a' : '#18181b',
-                  border: `1px solid ${amountSol === amt ? '#52525b' : 'var(--border-subtle)'}`,
-                  color: amountSol === amt ? '#ffffff' : 'var(--text-secondary)',
+                  background: amountSol === amt ? 'var(--text-primary)' : 'var(--bg-card-subtle)',
+                  border: `1px solid ${amountSol === amt ? 'var(--text-primary)' : 'var(--border-subtle)'}`,
+                  color: amountSol === amt ? 'var(--bg-primary)' : 'var(--text-secondary)',
                   fontWeight: amountSol === amt ? 600 : 400,
                   fontSize: '0.78rem',
                   cursor: 'pointer',
@@ -398,7 +398,7 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
 
         {/* Escrow Details */}
         <div style={{
-          background: '#18181b',
+          background: 'var(--bg-card-subtle)',
           border: '1px solid var(--border-subtle)',
           borderRadius: 'var(--radius-sm)',
           padding: '0.9rem',
@@ -409,7 +409,7 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ color: 'var(--text-muted)' }}>PDA:</span>
-            <span className="mono-text" style={{ color: '#fafafa' }}>
+            <span className="mono-text" style={{ color: 'var(--text-primary)' }}>
               {pdaAddress ? `${pdaAddress.slice(0, 6)}...${pdaAddress.slice(-6)}` : 'Connect wallet to derive'}
             </span>
           </div>

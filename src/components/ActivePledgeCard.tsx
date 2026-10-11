@@ -314,7 +314,7 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
           />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#ffffff' }}>@{pledge.githubUsername}</h2>
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>@{pledge.githubUsername}</h2>
               <a
                 href={`https://github.com/${pledge.githubUsername}`}
                 target="_blank"
@@ -326,7 +326,7 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
             </div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span>PDA:</span>
-              <span className="mono-text" style={{ color: '#a1a1aa' }}>
+              <span className="mono-text" style={{ color: 'var(--text-secondary)' }}>
                 {pledge.address.slice(0, 6)}...{pledge.address.slice(-6)}
               </span>
               <a
@@ -344,12 +344,12 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
         {/* Right: Status Badges */}
         <div>
           {isTargetMet ? (
-            <span className="status-pill" style={{ color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.3)' }}>
+            <span className="status-pill" style={{ color: 'var(--accent-emerald)', borderColor: 'rgba(16, 185, 129, 0.3)' }}>
               <ShieldCheck size={13} />
               <span>Target Achieved</span>
             </span>
           ) : timeLeft.isExpired ? (
-            <span className="status-pill" style={{ color: '#f87171', borderColor: 'rgba(239, 68, 68, 0.3)' }}>
+            <span className="status-pill" style={{ color: 'var(--accent-red)', borderColor: 'rgba(239, 68, 68, 0.3)' }}>
               <AlertTriangle size={13} />
               <span>Deadline Expired</span>
             </span>
@@ -373,17 +373,17 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
         
         {/* Card 1: Escrowed SOL */}
         <div style={{
-          background: '#18181b',
+          background: 'var(--bg-card-subtle)',
           border: '1px solid var(--border-subtle)',
           borderRadius: 'var(--radius-sm)',
           padding: '1.1rem',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             <span>Locked Escrow</span>
-            <Coins size={14} color="#a1a1aa" />
+            <Coins size={14} color="var(--text-secondary)" />
           </div>
           <div style={{ margin: '0.5rem 0' }}>
-            <span className="mono-text" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#ffffff' }}>
+            <span className="mono-text" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--text-primary)' }}>
               {pledge.amountSol} SOL
             </span>
           </div>
@@ -394,25 +394,25 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
 
         {/* Card 2: Countdown Timer */}
         <div style={{
-          background: '#18181b',
+          background: 'var(--bg-card-subtle)',
           border: '1px solid var(--border-subtle)',
           borderRadius: 'var(--radius-sm)',
           padding: '1.1rem',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             <span>Time Remaining</span>
-            <Clock size={14} color={timeLeft.isExpired ? '#ef4444' : '#a1a1aa'} />
+            <Clock size={14} color={timeLeft.isExpired ? 'var(--accent-red)' : 'var(--text-secondary)'} />
           </div>
           <div style={{ margin: '0.5rem 0' }}>
             {timeLeft.isExpired ? (
-              <span className="mono-text" style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f87171' }}>
+              <span className="mono-text" style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent-red)' }}>
                 EXPIRED
               </span>
             ) : (
-              <div className="mono-text" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#ffffff', display: 'flex', gap: '0.25rem' }}>
+              <div className="mono-text" style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', gap: '0.25rem' }}>
                 <span>{String(timeLeft.hours).padStart(2, '0')}:</span>
                 <span>{String(timeLeft.minutes).padStart(2, '0')}:</span>
-                <span style={{ color: '#10b981' }}>{String(timeLeft.seconds).padStart(2, '0')}</span>
+                <span style={{ color: 'var(--accent-emerald)' }}>{String(timeLeft.seconds).padStart(2, '0')}</span>
               </div>
             )}
           </div>
@@ -425,16 +425,16 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
 
       {/* Commit Progress Tracker */}
       <div style={{
-        background: '#18181b',
+        background: 'var(--bg-card-subtle)',
         border: '1px solid var(--border-subtle)',
         borderRadius: 'var(--radius-sm)',
         padding: '1.25rem',
-        marginBottom: '1.5rem'
+        marginBottom: '1.25rem'
       }}>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
-            <h3 style={{ fontSize: '0.92rem', fontWeight: 600, color: '#fafafa', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <h3 style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <GitCommit size={16} />
               <span>GitHub Commit Proof Tracker</span>
             </h3>
@@ -473,17 +473,17 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
         <div style={{ marginBottom: '1rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.35rem' }}>
             <span style={{ color: 'var(--text-secondary)' }}>
-              <strong style={{ color: '#fafafa' }}>{verifiedCount}</strong> of {pledge.targetCommits} commits completed
+              <strong style={{ color: 'var(--text-primary)' }}>{verifiedCount}</strong> of {pledge.targetCommits} commits completed
             </span>
-            <span className="mono-text" style={{ fontWeight: 600, color: progressPercent >= 100 ? '#10b981' : '#fafafa' }}>
+            <span className="mono-text" style={{ fontWeight: 600, color: progressPercent >= 100 ? 'var(--accent-emerald)' : 'var(--text-primary)' }}>
               {progressPercent}%
             </span>
           </div>
-          <div style={{ width: '100%', height: '6px', background: '#27272a', borderRadius: '3px', overflow: 'hidden' }}>
+          <div style={{ width: '100%', height: '6px', background: 'var(--border-subtle)', borderRadius: '3px', overflow: 'hidden' }}>
             <div style={{
               width: `${progressPercent}%`,
               height: '100%',
-              background: progressPercent >= 100 ? '#10b981' : '#ffffff',
+              background: progressPercent >= 100 ? 'var(--accent-emerald)' : 'var(--text-primary)',
               borderRadius: '3px',
               transition: 'width 0.3s ease',
             }} />
@@ -517,7 +517,7 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: '0.5rem 0.75rem',
-                    background: '#121215',
+                    background: 'var(--bg-card)',
                     borderRadius: 'var(--radius-sm)',
                     border: '1px solid var(--border-subtle)',
                     fontSize: '0.78rem',
@@ -525,10 +525,10 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
-                    <span className="mono-text" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', background: '#1c1c20', padding: '0.1rem 0.35rem', borderRadius: '4px' }}>
+                    <span className="mono-text" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', background: 'var(--bg-card-subtle)', padding: '0.1rem 0.35rem', borderRadius: '4px' }}>
                       {c.sha}
                     </span>
-                    <span style={{ color: '#fafafa', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <span style={{ color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {c.message}
                     </span>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', flexShrink: 0 }}>
@@ -552,6 +552,37 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
 
       </div>
 
+      {/* Helpful Status Explanation Banner */}
+      <div style={{
+        padding: '0.75rem 0.9rem',
+        borderRadius: 'var(--radius-sm)',
+        background: isTargetMet ? 'var(--accent-emerald-subtle)' : timeLeft.isExpired ? 'rgba(239, 68, 68, 0.08)' : 'var(--bg-card-subtle)',
+        border: `1px solid ${isTargetMet ? 'rgba(16, 185, 129, 0.25)' : timeLeft.isExpired ? 'rgba(239, 68, 68, 0.25)' : 'var(--border-subtle)'}`,
+        fontSize: '0.8rem',
+        color: isTargetMet ? 'var(--accent-emerald)' : timeLeft.isExpired ? 'var(--accent-red)' : 'var(--text-secondary)',
+        marginBottom: '1.25rem',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem'
+      }}>
+        {isTargetMet ? (
+          <>
+            <ShieldCheck size={16} style={{ flexShrink: 0 }} />
+            <span>Target achieved! Oracle verified your commit proofs. Click &quot;Claim 100% Refund&quot; below to receive your {pledge.amountSol} SOL.</span>
+          </>
+        ) : timeLeft.isExpired ? (
+          <>
+            <AlertTriangle size={16} style={{ flexShrink: 0 }} />
+            <span>Deadline expired without achieving the commit goal. Escrow is eligible for slashing to the community treasury.</span>
+          </>
+        ) : (
+          <>
+            <Clock size={16} style={{ flexShrink: 0 }} />
+            <span>Escrow active: Push {pledge.targetCommits - verifiedCount} more commit{pledge.targetCommits - verifiedCount === 1 ? '' : 's'} before the timer ends to unlock your 100% deposit refund.</span>
+          </>
+        )}
+      </div>
+
       {/* Action Alerts */}
       {actionError && (
         <div style={{
@@ -562,7 +593,7 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
           background: 'rgba(239, 68, 68, 0.1)',
           border: '1px solid rgba(239, 68, 68, 0.25)',
           borderRadius: 'var(--radius-sm)',
-          color: '#f87171',
+          color: 'var(--accent-red)',
           fontSize: '0.8rem',
           marginBottom: '1rem'
         }}>
@@ -574,10 +605,10 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
       {actionSuccess && (
         <div style={{
           padding: '0.85rem 1rem',
-          background: actionSuccess.type === 'settle' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+          background: actionSuccess.type === 'settle' ? 'var(--accent-emerald-subtle)' : 'rgba(245, 158, 11, 0.1)',
           border: `1px solid ${actionSuccess.type === 'settle' ? 'rgba(16, 185, 129, 0.25)' : 'rgba(245, 158, 11, 0.25)'}`,
           borderRadius: 'var(--radius-sm)',
-          color: actionSuccess.type === 'settle' ? '#10b981' : '#fbbf24',
+          color: actionSuccess.type === 'settle' ? 'var(--accent-emerald)' : 'var(--accent-amber)',
           fontSize: '0.82rem',
           marginBottom: '1rem'
         }}>
