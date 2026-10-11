@@ -26,7 +26,7 @@ interface ActivePledgeCardProps {
 
 export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
   const { connection } = useConnection();
-  const { sendTransaction } = useWallet();
+  const { sendTransaction, signTransaction } = useWallet();
 
   const [profile, setProfile] = useState<GitHubProfile | null>(null);
   const [commits, setCommits] = useState<CommitItem[]>([]);
@@ -126,16 +126,30 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
       if (data.success) {
         if (data.requiresUserSignature && data.transactionBase64) {
           const tx = Transaction.from(Buffer.from(data.transactionBase64, 'base64'));
-          const signature = await sendTransaction(tx, connection);
-          const latest = await connection.getLatestBlockhash();
-          await connection.confirmTransaction(
-            {
-              signature,
-              blockhash: latest.blockhash,
-              lastValidBlockHeight: latest.lastValidBlockHeight,
-            },
-            'confirmed'
-          );
+          
+          let signature = '';
+          if (signTransaction) {
+            const signedTx = await signTransaction(tx);
+            const submitRes = await fetch('/api/oracle/submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                transactionBase64: signedTx.serialize().toString('base64'),
+              }),
+            });
+            const submitData = await submitRes.json();
+            if (!submitData.success) {
+              throw new Error(submitData.error || 'Failed to broadcast settlement transaction');
+            }
+            signature = submitData.signature;
+          } else {
+            signature = await sendTransaction(tx, connection);
+            try {
+              await connection.confirmTransaction(signature, 'confirmed');
+            } catch (e) {
+              console.warn('Confirm polling warning:', e);
+            }
+          }
 
           confetti({
             particleCount: 100,
@@ -191,16 +205,30 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
       if (data.success) {
         if (data.requiresUserSignature && data.transactionBase64) {
           const tx = Transaction.from(Buffer.from(data.transactionBase64, 'base64'));
-          const signature = await sendTransaction(tx, connection);
-          const latest = await connection.getLatestBlockhash();
-          await connection.confirmTransaction(
-            {
-              signature,
-              blockhash: latest.blockhash,
-              lastValidBlockHeight: latest.lastValidBlockHeight,
-            },
-            'confirmed'
-          );
+          
+          let signature = '';
+          if (signTransaction) {
+            const signedTx = await signTransaction(tx);
+            const submitRes = await fetch('/api/oracle/submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                transactionBase64: signedTx.serialize().toString('base64'),
+              }),
+            });
+            const submitData = await submitRes.json();
+            if (!submitData.success) {
+              throw new Error(submitData.error || 'Failed to broadcast slashing transaction');
+            }
+            signature = submitData.signature;
+          } else {
+            signature = await sendTransaction(tx, connection);
+            try {
+              await connection.confirmTransaction(signature, 'confirmed');
+            } catch (e) {
+              console.warn('Confirm polling warning:', e);
+            }
+          }
 
           setActionSuccess({
             type: 'slash',

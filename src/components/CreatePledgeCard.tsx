@@ -24,8 +24,7 @@ interface CreatePledgeCardProps {
 }
 
 export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
-  const { connection } = useConnection();
-  const { publicKey, sendTransaction, connected } = useWallet();
+  const { publicKey, sendTransaction, signTransaction, connected } = useWallet();
 
   const [githubUsername, setGithubUsername] = useState('Sandeshsandy001');
   const [profile, setProfile] = useState<GitHubProfile | null>(null);
@@ -137,18 +136,51 @@ export function CreatePledgeCard({ onPledgeCreated }: CreatePledgeCardProps) {
       });
 
       const tx = new Transaction().add(ix);
-      const signature = await sendTransaction(tx, connection);
+      
+      // Resilient blockhash retrieval
+      let blockhash = '';
+      try {
+        const rpcRes = await fetch('/api/rpc', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'getLatestBlockhash',
+            params: [{ commitment: 'confirmed' }],
+          }),
+        });
+        const rpcData = await rpcRes.json();
+        blockhash = rpcData?.result?.value?.blockhash;
+      } catch (e) {
+        console.warn('Proxy blockhash fetch warning:', e);
+      }
 
-      // Confirm transaction
-      const latestBlockhash = await connection.getLatestBlockhash();
-      await connection.confirmTransaction(
-        {
-          signature,
-          blockhash: latestBlockhash.blockhash,
-          lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-        },
-        'confirmed'
-      );
+      if (!blockhash) {
+        throw new Error('Unable to fetch recent blockhash from network.');
+      }
+
+      tx.recentBlockhash = blockhash;
+      tx.feePayer = publicKey;
+
+      let signature = '';
+      if (signTransaction) {
+        const signedTx = await signTransaction(tx);
+        const submitRes = await fetch('/api/oracle/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            transactionBase64: signedTx.serialize().toString('base64'),
+          }),
+        });
+        const submitData = await submitRes.json();
+        if (!submitData.success) {
+          throw new Error(submitData.error || 'Failed to broadcast pledge creation transaction');
+        }
+        signature = submitData.signature;
+      } else {
+        throw new Error('Wallet does not support transaction signing.');
+      }
 
       setSuccessTx(signature);
       setIsSubmitting(false);

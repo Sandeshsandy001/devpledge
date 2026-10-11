@@ -9,11 +9,24 @@ import { DEVNET_RPC_URL } from '@/lib/solana/constants';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 export function SolanaWalletProvider({ children }: { children: React.ReactNode }) {
-  const endpoint = useMemo(() => DEVNET_RPC_URL, []);
+  const [endpoint, setEndpoint] = React.useState<string>(DEVNET_RPC_URL);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setEndpoint(`${window.location.origin}/api/rpc`);
+    }
+  }, []);
+
   const wallets = useMemo(() => [], []);
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
+    <ConnectionProvider
+      endpoint={endpoint}
+      config={{
+        commitment: 'confirmed',
+        wsEndpoint: 'wss://api.devnet.solana.com',
+      }}
+    >
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
