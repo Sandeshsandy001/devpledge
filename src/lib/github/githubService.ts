@@ -27,6 +27,7 @@ export interface GitHubVerificationResult {
   startTime: number;
   checkedAt: number;
   error?: string;
+  rateLimited?: boolean;
 }
 
 // Memory store for simulated commits during testing / demoing
@@ -37,7 +38,7 @@ export function addSimulatedCommit(username: string, repo: string, message: stri
   const commit: CommitItem = {
     id: `sim-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     sha: Math.random().toString(16).slice(2, 9),
-    message: message || 'feat: ship hackathon MVP update #solana',
+    message: message || 'feat: ship milestone update #solana',
     repo: repo || `${username}/devpledge-submission`,
     timestamp: new Date().toISOString(),
     url: `https://github.com/${username}/${repo || 'devpledge-submission'}`,
@@ -71,8 +72,16 @@ export async function fetchGitHubProfile(username: string): Promise<GitHubProfil
 
     if (!res.ok) {
       if (res.status === 404) return null;
-      console.warn(`GitHub API profile returned ${res.status} for ${username}`);
-      return null;
+      // If 403 rate-limited or any other error, provide fallback public profile
+      return {
+        username,
+        name: username,
+        avatarUrl: `https://github.com/${username}.png`,
+        bio: null,
+        publicRepos: 1,
+        followers: 0,
+        profileUrl: `https://github.com/${username}`,
+      };
     }
 
     const data = await res.json();
@@ -86,8 +95,102 @@ export async function fetchGitHubProfile(username: string): Promise<GitHubProfil
       profileUrl: data.html_url,
     };
   } catch (err) {
-    console.error('Error fetching GitHub profile:', err);
-    return null;
+    console.warn('Error fetching GitHub profile, using fallback:', err);
+    return {
+      username,
+      name: username,
+      avatarUrl: `https://github.com/${username}.png`,
+      bio: null,
+      publicRepos: 1,
+      followers: 0,
+      profileUrl: `https://github.com/${username}`,
+    };
+  }
+}
+
+function decodeHtml(html: string): string {
+  return html
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&');
+}
+
+/**
+ * Fallback Atom feed parser: parses public GitHub Atom push feed without API rate limits.
+ */
+async function fetchAtomCommits(username: string, startMs: number): Promise<CommitItem[]> {
+  try {
+    const res = await fetch(`https://github.com/${encodeURIComponent(username)}.atom`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; DevPledge/1.0)',
+      },
+      cache: 'no-store',
+    });
+
+    if (!res.ok) return [];
+
+    const xml = await res.text();
+    const entries = xml.split('<entry>');
+    const commits: CommitItem[] = [];
+
+    for (let i = 1; i < entries.length; i++) {
+      const rawEntry = entries[i];
+      const pubMatch = rawEntry.match(/<(?:published|updated)>(.*?)<\/(?:published|updated)>/);
+      const pubStr = pubMatch ? pubMatch[1].replace(' UTC', 'Z') : '';
+      const pubTime = new Date(pubStr).getTime();
+      if (pubTime < startMs) continue;
+
+      const e = decodeHtml(rawEntry);
+
+      // Extract repo name
+      const repoMatch =
+        e.match(/href="\/([^\/"]+\/[^\/"]+)"[^>]*rel="noreferrer"[^>]*>[^<]+<\/[aA]>\s*<span>/i) ||
+        e.match(/pushed to[\s\S]*?in\s*<a[^>]*href="\/([^"]+)"/i) ||
+        e.match(/<title[^>]*>.*?pushed\s+([^\s<]+)/i);
+
+      let repoName = repoMatch ? repoMatch[1] : '';
+      if (!repoName.includes('/')) {
+        repoName = `${username}/${repoName || 'repo'}`;
+      }
+
+      // Extract individual commits inside this push event
+      const commitRegex =
+        /href="\/([^\/"]+\/[^\/"]+)\/commit\/([a-f0-9]+)"[^>]*>([a-f0-9]+)<\/a><\/code>[\s\S]*?<blockquote>\s*([\s\S]*?)\s*<\/blockquote>/gi;
+      let m;
+      let found = false;
+      while ((m = commitRegex.exec(e)) !== null) {
+        found = true;
+        commits.push({
+          id: `${m[2]}`,
+          sha: m[3].trim(),
+          message: m[4].replace(/<[^>]+>/g, '').trim(),
+          repo: m[1] || repoName,
+          timestamp: pubStr,
+          url: `https://github.com/${m[1] || repoName}/commit/${m[2]}`,
+        });
+      }
+
+      if (!found) {
+        const titleMatch = rawEntry.match(/<title[^>]*>(.*?)<\/title>/);
+        commits.push({
+          id: `push-${pubTime}`,
+          sha: 'push',
+          message: titleMatch
+            ? decodeHtml(titleMatch[1])
+            : `Pushed code to ${repoName}`,
+          repo: repoName,
+          timestamp: pubStr,
+          url: `https://github.com/${repoName}`,
+        });
+      }
+    }
+
+    return commits;
+  } catch (err) {
+    console.warn('Error fetching GitHub Atom feed:', err);
+    return [];
   }
 }
 
@@ -112,7 +215,9 @@ export async function verifyUserCommits(
 
   const collectedCommits: CommitItem[] = [];
   const startMs = startTimeSec * 1000;
+  let rateLimited = false;
 
+  // 1. Try REST API
   try {
     const headers: Record<string, string> = {
       'User-Agent': 'DevPledge-Oracle/1.0',
@@ -123,7 +228,6 @@ export async function verifyUserCommits(
       headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
     }
 
-    // Fetch user public events
     const res = await fetch(
       `https://api.github.com/users/${encodeURIComponent(username)}/events/public?per_page=100`,
       {
@@ -153,7 +257,6 @@ export async function verifyUserCommits(
                   });
                 }
               } else {
-                // Count push event as at least 1 commit if payload commits not detailed
                 collectedCommits.push({
                   id: `${evt.id}`,
                   sha: 'push',
@@ -168,18 +271,33 @@ export async function verifyUserCommits(
         }
       }
     } else {
-      console.warn(`GitHub events returned status ${res.status}`);
+      if (res.status === 403) {
+        rateLimited = true;
+      }
+      console.warn(`GitHub REST events returned ${res.status}. Falling back to public Atom feed.`);
     }
   } catch (err) {
-    console.error('Error fetching GitHub events:', err);
+    console.error('Error fetching GitHub REST events:', err);
   }
 
-  // Include any simulated test commits created for this demo
+  // 2. If REST was rate-limited or didn't find commits, query unthrottled public Atom feed
+  if (collectedCommits.length === 0 || rateLimited) {
+    const atomCommits = await fetchAtomCommits(username, startMs);
+    for (const ac of atomCommits) {
+      if (!collectedCommits.some((c) => c.sha === ac.sha || c.id === ac.id)) {
+        collectedCommits.push(ac);
+      }
+    }
+  }
+
+  // 3. Include any simulated test commits
   const sim = simulatedCommitsStore.get(username.toLowerCase()) || [];
   for (const c of sim) {
     const cMs = new Date(c.timestamp).getTime();
     if (cMs >= startMs) {
-      collectedCommits.unshift(c);
+      if (!collectedCommits.some((exist) => exist.sha === c.sha || exist.id === c.id)) {
+        collectedCommits.unshift(c);
+      }
     }
   }
 
@@ -195,5 +313,6 @@ export async function verifyUserCommits(
     commits: collectedCommits,
     startTime: startTimeSec,
     checkedAt: Math.floor(Date.now() / 1000),
+    rateLimited,
   };
 }
