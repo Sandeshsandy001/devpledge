@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Transaction } from '@solana/web3.js';
 import confetti from 'canvas-confetti';
 import { 
   GitCommit, 
@@ -26,6 +28,9 @@ interface ActivePledgeCardProps {
 }
 
 export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
+  const { connection } = useConnection();
+  const { sendTransaction } = useWallet();
+
   const [profile, setProfile] = useState<GitHubProfile | null>(null);
   const [commits, setCommits] = useState<CommitItem[]>([]);
   const [verifiedCount, setVerifiedCount] = useState(0);
@@ -122,6 +127,35 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
 
       const data = await res.json();
       if (data.success) {
+        if (data.requiresUserSignature && data.transactionBase64) {
+          const tx = Transaction.from(Buffer.from(data.transactionBase64, 'base64'));
+          const signature = await sendTransaction(tx, connection);
+          const latest = await connection.getLatestBlockhash();
+          await connection.confirmTransaction(
+            {
+              signature,
+              blockhash: latest.blockhash,
+              lastValidBlockHeight: latest.lastValidBlockHeight,
+            },
+            'confirmed'
+          );
+
+          confetti({
+            particleCount: 120,
+            spread: 80,
+            origin: { y: 0.6 },
+            colors: ['#9945FF', '#14F195', '#00F2FE', '#FFD700'],
+          });
+          setActionSuccess({
+            type: 'settle',
+            signature,
+            message: `100% deposit (${pledge.amountSol} SOL) refunded to your wallet!`,
+            explorerUrl: `https://explorer.solana.com/tx/${signature}?cluster=devnet`,
+          });
+          onRefresh();
+          return;
+        }
+
         confetti({
           particleCount: 120,
           spread: 80,

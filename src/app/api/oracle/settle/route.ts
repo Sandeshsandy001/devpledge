@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // 4. Ensure Oracle has fee lamports
+    // 4. Check Oracle balance
     let oracleBalance = await connection.getBalance(oracleKeypair.publicKey);
     if (oracleBalance < 10_000) {
       try {
@@ -71,40 +71,54 @@ export async function POST(req: NextRequest) {
         await connection.confirmTransaction(airdropSig);
         oracleBalance = await connection.getBalance(oracleKeypair.publicKey);
       } catch (e) {
-        console.warn('Oracle airdrop attempt failed:', e);
+        // faucet may be rate-limited
       }
     }
 
-    if (oracleBalance < 5_000) {
-      return NextResponse.json({
-        success: false,
-        error: `Oracle relayer needs Devnet gas. Please airdrop Devnet SOL to Oracle: ${oracleKeypair.publicKey.toBase58()}`,
-        oraclePublicKey: oracleKeypair.publicKey.toBase58(),
-      }, { status: 503 });
-    }
-
-    // 5. Construct settle_pledge instruction and execute
+    // 5. Build settlement instruction
     const ix = settlePledgeInstruction({
       pledgePda,
       user: userPubkey,
       authority: oracleKeypair.publicKey,
     });
 
-    const tx = new Transaction().add(ix);
-    tx.feePayer = oracleKeypair.publicKey;
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
-    tx.recentBlockhash = blockhash;
+    const { blockhash } = await connection.getLatestBlockhash();
 
-    const signature = await sendAndConfirmTransaction(connection, tx, [oracleKeypair], {
-      commitment: 'confirmed',
-    });
+    // If Oracle has enough balance, it submits and pays gas directly
+    if (oracleBalance >= 5_000) {
+      const tx = new Transaction().add(ix);
+      tx.feePayer = oracleKeypair.publicKey;
+      tx.recentBlockhash = blockhash;
+
+      const signature = await sendAndConfirmTransaction(connection, tx, [oracleKeypair], {
+        commitment: 'confirmed',
+      });
+
+      return NextResponse.json({
+        success: true,
+        signature,
+        explorerUrl: `https://explorer.solana.com/tx/${signature}?cluster=devnet`,
+        refundedSol: pledge.amountSol,
+        message: `Escrow successfully settled! 100% of ${pledge.amountSol} SOL refunded to developer.`,
+        commits: verification.commits,
+      });
+    }
+
+    // If Oracle is out of testnet gas, Oracle co-signs and returns transaction
+    // for user wallet to finalize and submit (user pays tiny 0.000005 SOL fee)
+    const tx = new Transaction().add(ix);
+    tx.feePayer = userPubkey;
+    tx.recentBlockhash = blockhash;
+    tx.partialSign(oracleKeypair);
+
+    const serialized = tx.serialize({ requireAllSignatures: false }).toString('base64');
 
     return NextResponse.json({
       success: true,
-      signature,
-      explorerUrl: `https://explorer.solana.com/tx/${signature}?cluster=devnet`,
+      requiresUserSignature: true,
+      transactionBase64: serialized,
       refundedSol: pledge.amountSol,
-      message: `Escrow successfully settled! 100% of ${pledge.amountSol} SOL refunded to developer.`,
+      message: `Oracle verified commit targets and co-signed settlement! Approve in wallet to receive refund.`,
       commits: verification.commits,
     });
   } catch (err: unknown) {
