@@ -106,7 +106,7 @@ export function ActivePledgeCard({ pledge, onRefresh }: ActivePledgeCardProps) {
 
   useEffect(() => {
     checkGitHub();
-    const interval = setInterval(checkGitHub, 12000);
+    const interval = setInterval(checkGitHub, 30000);
     return () => clearInterval(interval);
   }, [pledge.githubUsername, pledge.startTime, pledge.targetCommits]);
 
