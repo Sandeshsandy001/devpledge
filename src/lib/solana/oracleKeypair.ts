@@ -41,15 +41,15 @@ export function getOracleKeypair(): Keypair {
     console.warn('Failed reading .oracle-keypair.json:', err);
   }
 
-  // 3. Generate a persistent keypair for this environment and save it
-  const newKeypair = Keypair.generate();
-  try {
-    fs.writeFileSync(KEYPAIR_FILE, JSON.stringify(Array.from(newKeypair.secretKey)), 'utf8');
-  } catch (err) {
-    console.warn('Could not persist new oracle keypair to disk:', err);
-  }
+  // 3. Fallback to deterministic keypair ensuring consistent identity across serverless / lambda invocations
+  const FALLBACK_SECRET_KEY = [
+    137, 78, 121, 242, 4, 179, 140, 254, 160, 100, 224, 117, 150, 20, 119, 129,
+    169, 78, 20, 27, 245, 64, 84, 143, 25, 85, 50, 68, 220, 13, 43, 252,
+    43, 229, 139, 201, 39, 175, 223, 176, 35, 138, 79, 217, 132, 123, 126, 16,
+    83, 132, 77, 122, 111, 118, 207, 41, 102, 26, 135, 16, 191, 181, 224, 178
+  ];
 
-  cachedKeypair = newKeypair;
+  cachedKeypair = Keypair.fromSecretKey(Uint8Array.from(FALLBACK_SECRET_KEY));
   return cachedKeypair;
 }
 

@@ -84,15 +84,14 @@ export function Navbar() {
                   width: '32px',
                   height: '32px',
                   borderRadius: 'var(--radius-sm)',
-                  background: 'var(--bg-card-subtle)',
-                  border: '1px solid var(--border-subtle)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
+                  overflow: 'hidden',
                 }}
               >
-                <Terminal size={17} color="var(--text-primary)" strokeWidth={2} />
+                <img src="/logo.svg" alt="DevPledge Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               </div>
               <span
                 style={{
